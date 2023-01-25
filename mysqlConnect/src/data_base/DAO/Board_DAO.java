@@ -92,6 +92,8 @@ public class Board_DAO {
 	public int insert(insertBoardDTO dto) {
 		int result = 0;
 		
+		final String SQL = "INSERT INTO Board (boardTitle,boardContent,boardDateTime,boardWriter) VALUES(?,?,?,?)";
+		
 		try {
 			
 		} catch (Exception exception) {
