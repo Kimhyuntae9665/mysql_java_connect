@@ -10,6 +10,7 @@ import java.util.List;
 
 import data_base.Database_Connector;
 import data_base.Entity.BoardEntity;
+import dto.insertBoardDTO;
 
 // DAO : Data Access Object 의 줄임말 
 // 데이터 베이스에 접근해서 데이터 검색 및 삽입 등의 데이터베이스 작업을 담당하는 클래스 
@@ -79,5 +80,27 @@ public class Board_DAO {
 		return result;
 	} 
 	
+	
+//	데이터베이스에서 Board 테이블에 레코드를 삽입 
+//	SQL : INSERT INTO Board (boardTitle,boardContent,boardDateTime,boardWriter)
+//	VALUES(?,?,?,?); 입력값이 변수 값으로 계속 바뀔 것 이기 때문에 
+//	예상되는 반환 값은 : 0 or 1이 반환 
+//	dto 사용 필드가 매개변수가 1개이상일때 
+//	DTO 사용 
+	
+	
+	public int insert(insertBoardDTO dto) {
+		int result = 0;
+		
+		try {
+			
+		} catch (Exception exception) {
+			
+		}finally {
+			
+		}
+		
+		return result;
+	}
 
 }
