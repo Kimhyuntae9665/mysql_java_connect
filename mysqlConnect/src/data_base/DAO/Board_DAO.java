@@ -1,15 +1,20 @@
 package data_base.DAO;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-
+import com.mysql.cj.x.protobuf.MysqlxCrud.Delete;
 
 import data_base.Database_Connector;
 import data_base.Entity.BoardEntity;
+import dto.DeleteBoardDTO;
+import dto.UpdateBoardDTO;
 import dto.insertBoardDTO;
 
 // DAO : Data Access Object 의 줄임말 
@@ -94,12 +99,133 @@ public class Board_DAO {
 		
 		final String SQL = "INSERT INTO Board (boardTitle,boardContent,boardDateTime,boardWriter) VALUES(?,?,?,?)";
 		
+		Connection connection = null;
+//		PreparedStatement : 동적으로 SQL문의 값을 지정할 수 있도록 함 
+		PreparedStatement preparedStatement = null;
+		
+		SimpleDateFormat simpleDateFormat = 
+				new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		
 		try {
+			connection = Database_Connector.createConnection();
+//			PreparedDtatement 객체 생성 
+			preparedStatement = connection.prepareStatement(SQL);
+//			INSERT INTO Board (boardTitle,boardContent,boardDateTime,boardWriter) VALUES(?,?,?,?)
+			preparedStatement.setString(1, dto.getBoardTitle());
+			preparedStatement.setString(2, dto.getBoardContent());
+//			java.util에 있는 new Date() 사용 
+			preparedStatement.setString(3, simpleDateFormat.format(new Date()));
+			preparedStatement.setInt(4, dto.getBoardWriter());
+			
+			result = preparedStatement.executeUpdate();
 			
 		} catch (Exception exception) {
+			exception.printStackTrace();
 			
 		}finally {
+			try {
+				if(preparedStatement !=null && preparedStatement.isClosed()) {
+					 preparedStatement.close();
+				}
+				if(connection !=null && connection.isClosed()) {
+					 connection.close();
+				}
+			}
+			catch(Exception exception2) {
+				exception2.printStackTrace();
+			}
+		}
+		
+		return result;
+	}
+	
+	
+//	데이터 베이스에서 Board테이블의 레코드 중 입력받은 board id에 해당하는 레코드의 
+//	title과 content를 입력받은 값으로 수정 
+	
+//	SQL : UPDATE Board SET boardTitle = ? , boardContent = ? 
+//		WHERE id = ?;
+//	예상되는 반환 값 : 0 or 1 
+
+	public int update(UpdateBoardDTO dto) {  //layer 와 layer 간에 정보 교환은 DTO로 한다 
+		
+		
+		
+		int result =0;
+		
+		
+		final String SQL = "UPDATE Board SET boardTitle = ? , boardContent = ?  WHERE id = ?";
+		
+		Connection connection = null;
+//		preparedStatement 써서 ? 구문 처리 
+		PreparedStatement preparedStatement = null;
+		
+		try {
 			
+			connection = Database_Connector.createConnection();
+			preparedStatement = connection.prepareStatement(SQL);
+			
+//			UPDATE Board SET boardTitle = ? , boardContent = ? 
+//			WHERE id = ?;
+			preparedStatement.setString(1, dto.getBoardTitle());
+			preparedStatement.setString(2, dto.getBoardContent());
+			preparedStatement.setInt(3, dto.getId());
+			
+			result = preparedStatement.executeUpdate();
+			
+		}catch(Exception exception) {
+			exception.printStackTrace();
+		}finally {
+			try {
+				if(preparedStatement !=null && !preparedStatement.isClosed()) {
+					preparedStatement.close();
+				}
+				if(connection !=null && !connection.isClosed()) {
+					connection.close();
+				}
+			}catch(Exception exception) {
+				
+			}
+		}
+		
+		
+		return result;
+	}
+	
+//	데이터 베이스에서 Board 테이블 중 입력받은 id에 해당하는 레코드를 삭제 
+//	SQL: DELETE FROM Board WHERE id = ?
+//	예상 반환 값은 : 0 or 1 
+//	where id =1 이면 dto가 1개 라서 dto 안쓰고 싶지만 나붕에 추가 될 가능성도 있기 때문에 dto 사용 
+	public int delete( DeleteBoardDTO dto) {
+		
+		
+		int result = 0;
+		
+		final String SQL = "DELETE FROM Board WHERE id = ?";
+		
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		
+		try {
+			
+			connection = Database_Connector.createConnection();
+			preparedStatement = connection.prepareStatement(SQL);
+//			DELETE FROM Board WHERE id = ?
+			preparedStatement.setInt(1, dto.getId());
+			
+			result = preparedStatement.executeUpdate();
+			
+		}catch(Exception exception) {
+			exception.printStackTrace();
+		}finally {
+			try {
+				if(preparedStatement != null && !preparedStatement.isClosed())
+					preparedStatement.close();
+				if(connection !=null && !connection.isClosed())
+					connection.close();
+			} catch (Exception exception) {
+				exception.printStackTrace();
+			}
 		}
 		
 		return result;

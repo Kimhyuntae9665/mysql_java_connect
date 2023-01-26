@@ -1,25 +1,85 @@
 package index;
 
 import java.util.List;
+import java.util.Scanner;
 
 import data_base.DAO.Board_DAO;
 import data_base.Entity.BoardEntity;
+import dto.DeleteBoardDTO;
+import dto.UpdateBoardDTO;
+import dto.insertBoardDTO;
 
 public class MainApplication {
 	
 	
 
 	public static void main(String[] args) {
-//		DAO 인스턴스 생성 
-		Board_DAO dao = new Board_DAO();
-//		데이터베이스에서 Board 테이블의 전체 레코드를 검색해서 출력 
 		
-		List<BoardEntity> findResult = dao.find(); //Board_DAO에서 만든 함수 find()
+		Scanner scanner = new Scanner(System.in);
+		String path = scanner.nextLine();
+		Board_DAO board_DAO = new Board_DAO();
 		
-		for(BoardEntity entity:findResult) {
-//			toString()이라도 return 값이 아무리 문자열 이라도 sop 출력문안에 입력해야 한다 
-			System.out.println(entity.toString());
+		if(path.equals("POST /board")) {
+			System.out.println("boardTitle : ");
+			String boardTitle = scanner.nextLine();
+			System.out.println("boardContent : ");
+			String boardContent = scanner.nextLine();
+			System.out.println("boardWriter : ");
+			Integer boardWriter = scanner.nextInt();
+			
+//			인스턴스 생성(사용자로부터 입력받아)
+			insertBoardDTO insertBoardDto = new insertBoardDTO(boardTitle, boardContent, boardWriter);
+			
+			int result = board_DAO.insert(insertBoardDto);
+			if(result==1) {
+				System.out.println("Insert Succcess");
+			}
+			
+			
 		}
+		
+		else if(path.equals("DELETE /board")) {
+			System.out.println("id: ");
+			Integer id = scanner.nextInt();
+			
+			DeleteBoardDTO deleteBoardDto = new DeleteBoardDTO(id);
+			
+			 int result = board_DAO.delete(deleteBoardDto);
+			
+			if(result ==1) System.out.println("Delete Sucess");
+			
+			else System.out.println("Delete Failed");
+		}
+		
+		else if(path.equals("GET /boardList")) {
+			
+			List<BoardEntity> boardList = board_DAO.find();
+			for(BoardEntity board:boardList)
+				System.out.println(board.toString());
+		}
+		
+		else if(path.equals("PATCH /board")) {
+			System.out.println("boardTitle : ");
+			String boardTitle = scanner.nextLine();
+			System.out.println("boardContent : ");
+			String boardContent = scanner.nextLine();
+			System.out.println("id : ");
+			Integer id = scanner.nextInt();
+			
+			
+			UpdateBoardDTO updateBoardDto = new UpdateBoardDTO( boardContent,boardTitle,id);
+			
+			int result = board_DAO.update(updateBoardDto);
+			
+			if(result==1) System.out.println("Update Success");
+			
+			else System.out.println("Update Failed");
+		}
+		
+		else {
+			System.out.println("404 Not found");
+		}
+
 	}
 
 }
